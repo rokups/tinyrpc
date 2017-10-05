@@ -42,7 +42,10 @@ class _RpcObject(object):
             raise ValueError('RPC response id does not match.')
 
         if 'error' in response:
-            raise ValueError(response['error'])
+            if isinstance(response['error'], BaseException):
+                raise response['error']
+            else:
+                raise ValueError(str(response['error']))
 
         if 'result' not in response or 'id' not in response:
             raise ValueError('Invalid RPC response.')
@@ -124,7 +127,7 @@ class RpcManager(object):
             try:
                 response['result'] = obj(*message['params'], **message['params_kw'])
             except Exception as e:
-                response['error'] = str(e)
+                response['error'] = e
 
         return response
 

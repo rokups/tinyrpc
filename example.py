@@ -8,7 +8,9 @@ class RpcProviderFoo(object):
 
     @tinyrpc.public
     def hello(self, name):
-        return 'Foo greets {}'.format(name)
+        # RPC calls may raise exceptions and they will be sent over the wire and raised on the other end, as long as
+        # your serialization method supports serializing them.
+        raise NotImplementedError()
 
 
 @tinyrpc.public
@@ -48,4 +50,8 @@ if __name__ == '__main__':
     bar = client.get_object('bar')
 
     print(bar.hello('rk'))
-    print(bar.foo.hello('rk'))
+
+    try:
+        print(bar.foo.hello('rk'))
+    except NotImplementedError:
+        print('bar.foo.hello raised NotImplementedError()')
